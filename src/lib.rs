@@ -39,8 +39,11 @@ pub fn start(div_id: String) {
 
   let app = smd!(
     <h1 on_click={|_| app_state.click_count = app_state.click_count + 1}>
-      I have clicked { format!("{}", app_state.click_count) } times
+      hello kerry
     </h1>
+    <div>
+      I have clicked { format!("{}", app_state.click_count) } times
+    </div>
   );
 
   smithy::mount(app, root_element);
