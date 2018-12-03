@@ -1,4 +1,4 @@
-#![feature(proc_macro_hygiene)]
+#![feature(proc_macro_hygiene, slice_patterns)]
 
 use wasm_bindgen::prelude::*;
 
@@ -7,15 +7,16 @@ use js_sys::{
   Object,
 };
 use std::mem::transmute;
-use wasm_bindgen::JsValue;
 use web_sys::{
-  console::log_1,
   Document,
   Element,
   Window,
 };
 
-use smithy::smd;
+use smithy::{
+  smd,
+  types::Component,
+};
 
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
@@ -30,7 +31,17 @@ pub fn start(div_id: String) {
   let doc: Document = get_document();
   let root_element: Element = doc.get_element_by_id(&div_id).unwrap();
 
-  let app = smd!(<h1>HIIII</h1>);
+  struct AppState {
+    click_count: u32,
+  }
+
+  let mut app_state = AppState { click_count: 0 };
+
+  let app = smd!(
+    <h1 on_click={|_| app_state.click_count = app_state.click_count + 1}>
+      I have clicked { format!("{}", app_state.click_count) } times
+    </h1>
+  );
 
   smithy::mount(app, root_element);
 }
