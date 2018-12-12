@@ -15,14 +15,11 @@ use web_sys::{
 
 use smithy::{
   smd,
-  types::{
-    Component,
-    SmithyComponent,
-  },
+  types::Component,
 };
 
-use wasm_bindgen::JsValue;
-use web_sys::console::log_1;
+// use wasm_bindgen::JsValue;
+// use web_sys::console::log_1;
 
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
@@ -33,15 +30,15 @@ fn get_document() -> Document {
 }
 
 struct AppState {
-  click_count: u32,
+  click_count: i32,
 }
 
-fn foo<'a, 'b>(count: u32, mut update_count: impl FnMut(u32) -> () + 'a) -> SmithyComponent<'b>
-where
-  'a: 'b,
-{
-  smd!(<h1 on_click={|_| update_count(4)}>{ format!("click = {}", count) }</h1>)
-}
+// fn foo<'a, 'b>(count: u32, mut update_count: impl FnMut(u32) -> () + 'a) -> SmithyComponent<'b>
+// where
+//   'a: 'b,
+// {
+//   smd!(<h1 on_click={|_| update_count(4)}>{ format!("click = {}", count) }</h1>)
+// }
 
 #[wasm_bindgen]
 pub fn start(div_id: String) {
@@ -50,19 +47,17 @@ pub fn start(div_id: String) {
 
   let mut app_state = AppState { click_count: 0 };
 
-  // TODO log app_state, see if it's changing...
-
+  // This event handler is for [0, 0] which is wrong AF
   let app_2 = smd!(<div>
-    {format!("{}", app_state.click_count) }
-    {
-      &mut foo(
-        app_state.click_count,
-        |new_count| {
-          log_1(&JsValue::from(format!("{}", app_state.click_count)));
-          app_state.click_count = new_count;
-        }
-      )
-    }
+    { format!("{}", app_state.click_count) }
+    <h1
+      on_click={|_| app_state.click_count = app_state.click_count + 1}
+    >
+      MOAR
+    </h1>
+    <h2 on_click={|_| app_state.click_count = app_state.click_count - 1}>
+      LESS
+    </h2>
   </div>);
 
   smithy::mount(Box::new(app_2), root_element);
