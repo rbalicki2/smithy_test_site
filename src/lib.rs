@@ -47,18 +47,20 @@ pub fn start(div_id: String) {
 
   let mut app_state = AppState { click_count: 0 };
 
-  // This event handler is for [0, 0] which is wrong AF
-  let app_2 = smd!(<div>
-    { format!("{}", app_state.click_count) }
-    <h1
-      on_click={|_| app_state.click_count = app_state.click_count + 1}
-    >
-      MOAR
-    </h1>
-    <h2 on_click={|_| app_state.click_count = app_state.click_count - 1}>
-      LESS
-    </h2>
-  </div>);
+  let app_2 = smd!(
+    on_hash_change={|_| app_state.click_count = 0};
+    <div>
+      { format!("{}", app_state.click_count) }
+      <h1
+        on_click={|_| app_state.click_count = app_state.click_count + 1}
+      >
+        MOAR
+      </h1>
+      <h2 on_click={|_| app_state.click_count = app_state.click_count - 1}>
+        LESS
+      </h2>
+    </div>
+  );
 
   smithy::mount(Box::new(app_2), root_element);
 }
