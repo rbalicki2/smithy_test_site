@@ -20,8 +20,6 @@ use smithy::{
 };
 use wasm_bindgen::JsValue;
 
-mod next_tick;
-
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
 }
@@ -40,7 +38,7 @@ enum Page {
 }
 
 struct RouterState {
-  current_page: Page,
+  pub current_page: Page,
 }
 
 fn get_current_user_id_from_hash() -> Option<i32> {
