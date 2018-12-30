@@ -75,38 +75,21 @@ impl RouterState {
   }
 
   pub fn new() -> RouterState {
-    // if let Some(user_id) = get_current_user_id_from_hash() {
     let future = smithy::future_from_timeout(300).map(|_| 3);
-    let unwrapped_promise = UnwrappedPromise::from_future(future);
-    // let data = Rc::new(RefCell::new(UnwrappedPromise::Pending));
-    // let data_1 = data.clone();
+    // let unwrapped_promise = UnwrappedPromise::from_future(future);
+    let unwrapped_promise = smithy::unwrapped_promise_from_future(future);
 
-    // let future = Box::new(
-    //   future
-    //     .map(move |s| {
-    //       log_1(&JsValue::from_str("future cb"));
-    //       *data_1.borrow_mut() = UnwrappedPromise::Success(s);
-    //       smithy::rerender();
-    //       JsValue::NULL
-    //     })
-    //     .map_err(|_| JsValue::NULL),
-    // );
-    // let future = future_to_promise(future);
-    // std::mem::forget(future);
-
-    RouterState {
-      current_page: Page::UserDetailView(0),
-      // promise: UnwrappedPromise::from_future(smithy::future_from_timeout(300)),
-      // promise: Box::new(smithy::future_from_timeout(1000)),
-      promise: unwrapped_promise,
-      // future,
+    if let Some(user_id) = get_current_user_id_from_hash() {
+      RouterState {
+        current_page: Page::UserDetailView(user_id),
+        promise: unwrapped_promise,
+      }
+    } else {
+      RouterState {
+        current_page: Page::Home,
+        promise: unwrapped_promise,
+      }
     }
-    // } else {
-    // RouterState {
-    //   current_page: Page::Home,
-    //   promise: smithy::promise_from_timeout(1_000),
-    // }
-    // }
   }
 }
 
@@ -141,13 +124,14 @@ pub fn start(div_id: String) {
     }
     {
       match *app_state.promise.borrow() {
-        UnwrappedPromise::Pending => "pending",
+        UnwrappedPromise::Pending => "pending".into(),
         UnwrappedPromise::Success(ref s) => {
           // s.as_string().unwrap(),
           log_1(&JsValue::from_str(&format!("{}", s)));
-          "success"
+          // "success"
+          format!("s-{}", s)
         }
-        _ => "err"
+        _ => "err".into()
       }
     }
   );
