@@ -70,7 +70,7 @@ impl RouterState {
   }
 
   pub fn new() -> RouterState {
-    let future = basic_futures::future_from_timeout(300).map(|_| 3);
+    let future = basic_futures::future_from_timeout(600).map(|_| 3);
     let unwrapped_promise = smithy::unwrapped_promise_from_future(future);
 
     if let Some(user_id) = get_current_user_id_from_hash() {
