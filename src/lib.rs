@@ -14,24 +14,16 @@ use web_sys::{
   Window,
 };
 
-use futures::{
-  Future,
-  Map,
-};
+use futures::Future;
 use smithy::{
   smd,
-  types::Component,
-  UnwrappedPromise,
-};
-use std::{
-  cell::RefCell,
-  rc::Rc,
+  types::{
+    Component,
+    PromiseState,
+    UnwrappedPromise,
+  },
 };
 use wasm_bindgen::JsValue;
-use wasm_bindgen_futures::{
-  future_to_promise,
-  JsFuture,
-};
 
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
@@ -52,7 +44,7 @@ enum Page {
 
 struct RouterState {
   pub current_page: Page,
-  pub promise: Rc<RefCell<UnwrappedPromise<i32, ()>>>,
+  pub unwrapped_promise: UnwrappedPromise<i32, ()>,
   // pub future: Box<dyn Future<Item = (), Error = ()>>,
 }
 
@@ -76,18 +68,17 @@ impl RouterState {
 
   pub fn new() -> RouterState {
     let future = smithy::future_from_timeout(300).map(|_| 3);
-    // let unwrapped_promise = UnwrappedPromise::from_future(future);
     let unwrapped_promise = smithy::unwrapped_promise_from_future(future);
 
     if let Some(user_id) = get_current_user_id_from_hash() {
       RouterState {
         current_page: Page::UserDetailView(user_id),
-        promise: unwrapped_promise,
+        unwrapped_promise,
       }
     } else {
       RouterState {
         current_page: Page::Home,
-        promise: unwrapped_promise,
+        unwrapped_promise,
       }
     }
   }
@@ -123,9 +114,9 @@ pub fn start(div_id: String) {
       }
     }
     {
-      match *app_state.promise.borrow() {
-        UnwrappedPromise::Pending => "pending".into(),
-        UnwrappedPromise::Success(ref s) => {
+      match *(*app_state.unwrapped_promise).borrow() {
+        PromiseState::Pending => "pending".into(),
+        PromiseState::Success(ref s) => {
           // s.as_string().unwrap(),
           log_1(&JsValue::from_str(&format!("{}", s)));
           // "success"
