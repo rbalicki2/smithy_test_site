@@ -25,6 +25,9 @@ use smithy::{
 };
 use wasm_bindgen::JsValue;
 
+// Temporary standin
+mod basic_futures;
+
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
 }
@@ -67,7 +70,7 @@ impl RouterState {
   }
 
   pub fn new() -> RouterState {
-    let future = smithy::future_from_timeout(300).map(|_| 3);
+    let future = basic_futures::future_from_timeout(300).map(|_| 3);
     let unwrapped_promise = smithy::unwrapped_promise_from_future(future);
 
     if let Some(user_id) = get_current_user_id_from_hash() {
@@ -117,9 +120,6 @@ pub fn start(div_id: String) {
       match *(*app_state.unwrapped_promise).borrow() {
         PromiseState::Pending => "pending".into(),
         PromiseState::Success(ref s) => {
-          // s.as_string().unwrap(),
-          log_1(&JsValue::from_str(&format!("{}", s)));
-          // "success"
           format!("s-{}", s)
         }
         _ => "err".into()
