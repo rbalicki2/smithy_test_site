@@ -1,4 +1,4 @@
-#![feature(proc_macro_hygiene, slice_patterns)]
+#![feature(proc_macro_hygiene, slice_patterns, custom_attribute)]
 
 use wasm_bindgen::prelude::*;
 
@@ -25,8 +25,11 @@ use smithy::{
 };
 use wasm_bindgen::JsValue;
 
-// Temporary standin
-mod basic_futures;
+mod fetch_posts;
+use self::fetch_posts::{
+  fetch_posts,
+  Post,
+};
 
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
@@ -48,7 +51,7 @@ enum Page {
 struct RouterState {
   pub current_page: Page,
   pub unwrapped_promise: UnwrappedPromise<i32, ()>,
-  // pub future: Box<dyn Future<Item = (), Error = ()>>,
+  pub unwrapped_posts: UnwrappedPromise<Post, ()>,
 }
 
 fn get_current_user_id_from_hash() -> Option<i32> {
@@ -72,16 +75,20 @@ impl RouterState {
   pub fn new() -> RouterState {
     let future = basic_futures::future_from_timeout(600).map(|_| 3);
     let unwrapped_promise = smithy::unwrapped_promise_from_future(future);
+    let posts_future = fetch_posts();
+    let unwrapped_posts = smithy::unwrapped_promise_from_future(posts_future);
 
     if let Some(user_id) = get_current_user_id_from_hash() {
       RouterState {
         current_page: Page::UserDetailView(user_id),
         unwrapped_promise,
+        unwrapped_posts,
       }
     } else {
       RouterState {
         current_page: Page::Home,
         unwrapped_promise,
+        unwrapped_posts,
       }
     }
   }
@@ -123,6 +130,13 @@ pub fn start(div_id: String) {
           format!("s-{}", s)
         }
         _ => "err".into()
+      }
+    }
+    {
+      match *(*app_state.unwrapped_posts).borrow() {
+        PromiseState::Pending => "post loading".into(),
+        PromiseState::Success(ref post) => format!("post - {}", post.title),
+        _ => "err loading post".into(),
       }
     }
   );

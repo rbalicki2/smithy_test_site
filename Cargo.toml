@@ -8,9 +8,9 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm-bindgen = { version = "0.2.28", features = ["nightly"] }
+wasm-bindgen = { version = "0.2.28", features = ["nightly", "serde-serialize"] }
 smithy = { path = "../smithy/crates/smithy" }
-# basic_futures = { path = "../basic_futures" }
+basic_futures = { path = "../basic_futures" }
 web-sys = { version = "0.3.5", features = [
   "console",
   "Document",
@@ -18,10 +18,20 @@ web-sys = { version = "0.3.5", features = [
   "Element",
   "Window",
   "Location",
+
+  # For fetching
+  "Headers",
+  "Request",
+  "RequestInit",
+  "RequestMode",
+  "Response",
 ] }
 js-sys = "0.3.5"
 futures = "0.1.25"
 wasm-bindgen-futures = "0.3.5"
+serde = "1.0.84"
+serde_derive = "1.0.84"
+serde_json = "1.0.34"
 
 [replace]
 "proc-macro2:0.4.24" = { path = "../smithy/crates/proc-macro2" }

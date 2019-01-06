@@ -1,5 +1,5 @@
 watch :
-	cargo watch -x fmt -s 'make build' -w src -w ../smithy/
+	cargo watch -x fmt -s 'make build' -w src -w ../smithy/ -w ../basic_futures/
 
 build :
 	mkdir -p dist
