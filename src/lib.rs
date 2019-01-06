@@ -31,6 +31,8 @@ use self::fetch_posts::{
   Post,
 };
 
+mod home_page;
+
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
 }
@@ -50,7 +52,7 @@ enum Page {
 
 struct RouterState {
   pub current_page: Page,
-  pub unwrapped_promise: UnwrappedPromise<i32, ()>,
+  pub user_list: Vec<home_page::UserInfo>,
   pub unwrapped_posts: UnwrappedPromise<Post, ()>,
 }
 
@@ -73,23 +75,30 @@ impl RouterState {
   }
 
   pub fn new() -> RouterState {
-    let future = basic_futures::future_from_timeout(600).map(|_| 3);
-    let unwrapped_promise = smithy::unwrapped_promise_from_future(future);
     let posts_future = fetch_posts();
     let unwrapped_posts = smithy::unwrapped_promise_from_future(posts_future);
 
-    if let Some(user_id) = get_current_user_id_from_hash() {
-      RouterState {
-        current_page: Page::UserDetailView(user_id),
-        unwrapped_promise,
-        unwrapped_posts,
-      }
+    let current_page = if let Some(user_id) = get_current_user_id_from_hash() {
+      Page::UserDetailView(user_id)
     } else {
-      RouterState {
-        current_page: Page::Home,
-        unwrapped_promise,
-        unwrapped_posts,
-      }
+      Page::Home
+    };
+
+    RouterState {
+      current_page,
+      unwrapped_posts,
+      user_list: vec![
+        home_page::UserInfo {
+          id: 1,
+          name: "Robert".into(),
+          navigate_to_user_profile: Box::new(|| log(&format!("navigate 1"))),
+        },
+        home_page::UserInfo {
+          id: 2,
+          name: "Kerry".into(),
+          navigate_to_user_profile: Box::new(|| log(&format!("navigate 2"))),
+        },
+      ],
     }
   }
 }
@@ -107,15 +116,7 @@ pub fn start(div_id: String) {
     }};
     {
       match app_state.current_page {
-        Page::Home => smd!(<div>
-          home
-          <ul>
-            <li><a href="#1">user id 1 byah</a></li>
-          </ul>
-          <ul>
-            <li><a href="#2">user id 2</a></li>
-          </ul>
-        </div>),
+        Page::Home => home_page::home_page(&mut app_state.user_list),
         Page::UserDetailView(id) => smd!(<div>
           user detail view id = { format!("{}", id) }
           <hr />
@@ -123,22 +124,14 @@ pub fn start(div_id: String) {
         </div>),
       }
     }
-    {
-      match *(*app_state.unwrapped_promise).borrow() {
-        PromiseState::Pending => "pending".into(),
-        PromiseState::Success(ref s) => {
-          format!("s-{}", s)
-        }
-        _ => "err".into()
-      }
-    }
-    {
-      match *(*app_state.unwrapped_posts).borrow() {
-        PromiseState::Pending => "post loading".into(),
-        PromiseState::Success(ref post) => format!("post - {}", post.title),
-        _ => "err loading post".into(),
-      }
-    }
+    // <div />
+    // {
+    //   match *(*app_state.unwrapped_posts).borrow() {
+    //     PromiseState::Pending => "post loading".into(),
+    //     PromiseState::Success(ref post) => format!("post - {}", post.title),
+    //     _ => "err loading post".into(),
+    //   }
+    // }
   );
 
   smithy::mount(Box::new(app_2), root_element);
