@@ -9,6 +9,7 @@ use std::{
   cell::RefCell,
   rc::Rc,
 };
+use web_sys::MouseEvent;
 
 pub struct UserInfo {
   pub id: i32,
@@ -42,12 +43,16 @@ pub fn home_page<'a>(
   let zipped_iter = user_infos.iter().zip(navigate_vec.into_iter());
   let mut inner = zipped_iter
     .map(|(user_info, cb)| {
-      smd!(<div
-        on_click={|_| {
-          cb.borrow()(user_info.id);
-        }}
-      >
-        user id={ format!("{} ", user_info.id) } - name={ format!("{}", user_info.name) }
+      smd!(<div>
+        <a
+          on_click={|e: &MouseEvent| {
+            cb.borrow()(user_info.id);
+            e.prevent_default();
+          }}
+          href
+        >
+          user id={ format!("{} ", user_info.id) } - name={ format!("{}", user_info.name) }
+        </a>
       </div>)
     })
     .collect::<Vec<SmithyComponent>>();

@@ -142,7 +142,13 @@ pub fn start(div_id: String) {
         Page::UserDetailView(id) => smd!(<div>
           user detail view id = { format!("{}", id) }
           <hr />
-          <a on_click={|_| current_page.set(Page::Home)}>Go home</a>
+          <a
+            on_click={|e: &web_sys::MouseEvent| {
+              current_page.set(Page::Home);
+              e.prevent_default();
+            }}
+            href
+          >Go home</a>
         </div>),
       }
     }
