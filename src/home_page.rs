@@ -31,9 +31,11 @@ pub fn home_page<'a>(
   user_infos: &'a Vec<UserInfo>,
   navigate_to_user_profile: impl FnMut(i32) -> () + 'a,
 ) -> SmithyComponent<'a> {
-  let navigate_to_user_profile = unsafe {
-    std::mem::transmute::<Box<FnMut(i32)>, Box<Fn(i32)>>(Box::new(navigate_to_user_profile))
+  let navigate_to_user_profile = {
+    let fn_once = std::cell::RefCell::new(Some(navigate_to_user_profile));
+    move |id| (fn_once.borrow_mut().take().unwrap())(id)
   };
+
   let mut navigate_cell = Rc::new(RefCell::new(navigate_to_user_profile));
   let navigate_vec = clone_many_times(&mut navigate_cell, user_infos.len());
 

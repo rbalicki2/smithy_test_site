@@ -43,9 +43,17 @@ pub fn log(s: &String) {
   log_1(&JsValue::from_str(s));
 }
 
+#[derive(Copy, Clone)]
 enum Page {
   Home,
   UserDetailView(i32),
+}
+
+impl Page {
+  pub fn navigate_to_user_detail_page(&mut self, i: i32) {
+    *self = Page::UserDetailView(i);
+    let _ = get_window().location().set_hash(&format!("{}", i));
+  }
 }
 
 struct RouterState {
@@ -113,10 +121,16 @@ pub fn start(div_id: String) {
       app_state.handle_hash_change();
     }};
     {
-      match app_state.current_page {
+      // TODO figure out a way to avoid cloning current_page
+      let current_page_for_match = app_state.current_page.clone();
+      let user_list = &app_state.user_list;
+      let current_page = &mut app_state.current_page;
+      match current_page_for_match {
         Page::Home => home_page::home_page(
-          &app_state.user_list,
-          |id| log(&format!("callback {}", id)),
+          &user_list,
+          move |id| {
+            current_page.navigate_to_user_detail_page(id);
+          },
         ),
         Page::UserDetailView(id) => smd!(<div>
           user detail view id = { format!("{}", id) }
