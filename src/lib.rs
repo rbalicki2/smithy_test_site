@@ -14,12 +14,10 @@ use web_sys::{
   Window,
 };
 
-use futures::Future;
 use smithy::{
   smd,
   types::{
     Component,
-    PromiseState,
     UnwrappedPromise,
   },
 };
@@ -91,12 +89,12 @@ impl RouterState {
         home_page::UserInfo {
           id: 1,
           name: "Robert".into(),
-          navigate_to_user_profile: Box::new(|| log(&format!("navigate 1"))),
+          // navigate_to_user_profile: Box::new(|| log(&format!("navigate 1"))),
         },
         home_page::UserInfo {
           id: 2,
           name: "Kerry".into(),
-          navigate_to_user_profile: Box::new(|| log(&format!("navigate 2"))),
+          // navigate_to_user_profile: Box::new(|| log(&format!("navigate 2"))),
         },
       ],
     }
@@ -116,7 +114,10 @@ pub fn start(div_id: String) {
     }};
     {
       match app_state.current_page {
-        Page::Home => home_page::home_page(&mut app_state.user_list),
+        Page::Home => home_page::home_page(
+          &app_state.user_list,
+          |id| log(&format!("callback {}", id)),
+        ),
         Page::UserDetailView(id) => smd!(<div>
           user detail view id = { format!("{}", id) }
           <hr />
