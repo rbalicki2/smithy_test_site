@@ -50,9 +50,16 @@ enum Page {
 }
 
 impl Page {
-  pub fn navigate_to_user_detail_page(&mut self, i: i32) {
-    *self = Page::UserDetailView(i);
-    let _ = get_window().location().set_hash(&format!("{}", i));
+  pub fn set(&mut self, page: Page) {
+    *self = page;
+    let _ = get_window().location().set_hash(&self.get_hash());
+  }
+
+  fn get_hash(&self) -> String {
+    match self {
+      Page::Home => "".into(),
+      Page::UserDetailView(id) => id.to_string(),
+    }
   }
 }
 
@@ -129,13 +136,13 @@ pub fn start(div_id: String) {
         Page::Home => home_page::home_page(
           &user_list,
           move |id| {
-            current_page.navigate_to_user_detail_page(id);
+            current_page.set(Page::UserDetailView(id));
           },
         ),
         Page::UserDetailView(id) => smd!(<div>
           user detail view id = { format!("{}", id) }
           <hr />
-          <a href="#">Go home</a>
+          <a on_click={|_| current_page.set(Page::Home)}>Go home</a>
         </div>),
       }
     }
