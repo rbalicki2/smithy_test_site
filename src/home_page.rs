@@ -11,12 +11,6 @@ use std::{
 };
 use web_sys::MouseEvent;
 
-pub struct UserInfo {
-  pub id: i32,
-  pub name: String,
-  // pub navigate_to_user_profile: Box<Fn()>,
-}
-
 fn clone_many_times<T>(cell: &T, count: usize) -> Vec<T>
 where
   T: Clone,
@@ -29,9 +23,10 @@ where
 }
 
 pub fn home_page<'a>(
-  user_infos: &'a Vec<UserInfo>,
-  navigate_to_user_profile: impl FnMut(i32) -> () + 'a,
+  user_infos: &'a Vec<crate::UserInfo>,
+  navigate_to_user_profile: impl FnMut(i32) + 'a,
 ) -> SmithyComponent<'a> {
+  // TODO should this be put into smithy and called Callback?
   let navigate_to_user_profile = {
     let fn_once = std::cell::RefCell::new(Some(navigate_to_user_profile));
     move |id| (fn_once.borrow_mut().take().unwrap())(id)

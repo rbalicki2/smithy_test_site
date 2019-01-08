@@ -30,6 +30,13 @@ use self::fetch_posts::{
 };
 
 mod home_page;
+mod user_page;
+
+pub struct UserInfo {
+  pub id: i32,
+  pub name: String,
+  // pub navigate_to_user_profile: Box<Fn()>,
+}
 
 fn get_window() -> Window {
   unsafe { transmute::<Object, Window>(global()) }
@@ -65,7 +72,7 @@ impl Page {
 
 struct RouterState {
   pub current_page: Page,
-  pub user_list: Vec<home_page::UserInfo>,
+  pub user_list: Vec<UserInfo>,
   pub unwrapped_posts: UnwrappedPromise<Post, ()>,
 }
 
@@ -101,12 +108,12 @@ impl RouterState {
       current_page,
       unwrapped_posts,
       user_list: vec![
-        home_page::UserInfo {
+        UserInfo {
           id: 1,
           name: "Robert".into(),
           // navigate_to_user_profile: Box::new(|| log(&format!("navigate 1"))),
         },
-        home_page::UserInfo {
+        UserInfo {
           id: 2,
           name: "Kerry".into(),
           // navigate_to_user_profile: Box::new(|| log(&format!("navigate 2"))),
@@ -139,17 +146,18 @@ pub fn start(div_id: String) {
             current_page.set(Page::UserDetailView(id));
           },
         ),
-        Page::UserDetailView(id) => smd!(<div>
-          user detail view id = { format!("{}", id) }
-          <hr />
-          <a
-            on_click={|e: &web_sys::MouseEvent| {
-              current_page.set(Page::Home);
-              e.prevent_default();
-            }}
-            href
-          >Go home</a>
-        </div>),
+        Page::UserDetailView(id) => {
+          if let Some(ref user_info) = app_state.user_list.iter().find(
+            |item| item.id == id
+          ) {
+            user_page::user_page(
+              user_info,
+              move || current_page.set(Page::Home)
+            )
+          } else {
+            user_page::user_not_found_page()
+          }
+        }
       }
     }
     // <div />
