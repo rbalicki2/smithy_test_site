@@ -5,10 +5,6 @@ use smithy::{
     SmithyComponent,
   },
 };
-use std::{
-  cell::RefCell,
-  rc::Rc,
-};
 use web_sys::MouseEvent;
 
 pub fn user_page<'a>(

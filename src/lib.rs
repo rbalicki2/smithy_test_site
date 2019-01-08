@@ -35,7 +35,6 @@ mod user_page;
 pub struct UserInfo {
   pub id: i32,
   pub name: String,
-  // pub navigate_to_user_profile: Box<Fn()>,
 }
 
 fn get_window() -> Window {
@@ -73,7 +72,7 @@ impl Page {
 struct RouterState {
   pub current_page: Page,
   pub user_list: Vec<UserInfo>,
-  pub unwrapped_posts: UnwrappedPromise<Post, ()>,
+  // pub unwrapped_posts: UnwrappedPromise<Post, ()>,
 }
 
 fn get_current_user_id_from_hash() -> Option<i32> {
@@ -95,8 +94,8 @@ impl RouterState {
   }
 
   pub fn new() -> RouterState {
-    let posts_future = fetch_posts();
-    let unwrapped_posts = smithy::unwrapped_promise_from_future(posts_future);
+    // let posts_future = fetch_posts();
+    // let unwrapped_posts = smithy::unwrapped_promise_from_future(posts_future);
 
     let current_page = if let Some(user_id) = get_current_user_id_from_hash() {
       Page::UserDetailView(user_id)
@@ -106,17 +105,15 @@ impl RouterState {
 
     RouterState {
       current_page,
-      unwrapped_posts,
+      // unwrapped_posts,
       user_list: vec![
         UserInfo {
           id: 1,
           name: "Robert".into(),
-          // navigate_to_user_profile: Box::new(|| log(&format!("navigate 1"))),
         },
         UserInfo {
           id: 2,
           name: "Kerry".into(),
-          // navigate_to_user_profile: Box::new(|| log(&format!("navigate 2"))),
         },
       ],
     }
@@ -160,14 +157,6 @@ pub fn start(div_id: String) {
         }
       }
     }
-    // <div />
-    // {
-    //   match *(*app_state.unwrapped_posts).borrow() {
-    //     PromiseState::Pending => "post loading".into(),
-    //     PromiseState::Success(ref post) => format!("post - {}", post.title),
-    //     _ => "err loading post".into(),
-    //   }
-    // }
   );
 
   smithy::mount(Box::new(app_2), root_element);

@@ -18,7 +18,7 @@ use web_sys::{
   Response,
 };
 
-const POST_URL: &'static str = "https://jsonplaceholder.typicode.com/posts/1";
+const POST_URL: &'static str = "https://jsonplaceholder.typicode.com/posts/";
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -29,12 +29,12 @@ pub struct Post {
   pub title: String,
 }
 
-pub fn fetch_posts() -> impl Future<Item = Post, Error = ()> {
+pub fn fetch_posts(id: i32) -> impl Future<Item = Post, Error = ()> {
   let mut opts = RequestInit::new();
   opts.method("GET");
   opts.mode(RequestMode::Cors);
 
-  let request = Request::new_with_str_and_init(POST_URL, &opts).unwrap();
+  let request = Request::new_with_str_and_init(&format!("{}{}", POST_URL, id), &opts).unwrap();
 
   request.headers().set("Accept", "application/json").unwrap();
 
