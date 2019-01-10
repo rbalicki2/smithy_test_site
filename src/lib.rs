@@ -18,6 +18,7 @@ use smithy::{
   smd,
   types::{
     Component,
+    PromiseState,
     UnwrappedPromise,
   },
 };
@@ -72,7 +73,7 @@ impl Page {
 struct RouterState {
   pub current_page: Page,
   pub user_list: Vec<UserInfo>,
-  // pub unwrapped_posts: UnwrappedPromise<Post, ()>,
+  pub unwrapped_posts: UnwrappedPromise<Post, ()>,
 }
 
 fn get_current_user_id_from_hash() -> Option<i32> {
@@ -94,8 +95,8 @@ impl RouterState {
   }
 
   pub fn new() -> RouterState {
-    // let posts_future = fetch_posts();
-    // let unwrapped_posts = smithy::unwrapped_promise_from_future(posts_future);
+    let posts_future = fetch_posts(1);
+    let unwrapped_posts = smithy::unwrapped_promise_from_future(posts_future);
 
     let current_page = if let Some(user_id) = get_current_user_id_from_hash() {
       Page::UserDetailView(user_id)
@@ -105,7 +106,7 @@ impl RouterState {
 
     RouterState {
       current_page,
-      // unwrapped_posts,
+      unwrapped_posts,
       user_list: vec![
         UserInfo {
           id: 1,
@@ -157,6 +158,16 @@ pub fn start(div_id: String) {
         }
       }
     }
+    <div>
+      <h1>Fetching post like:</h1>
+      {
+        match *(*app_state.unwrapped_posts).borrow() {
+          PromiseState::Pending => smd!(<span>still loading</span>),
+          PromiseState::Success(ref post) => smd!(<span>fetched a post with title <b>{ &post.title }</b></span>),
+          PromiseState::Error(_) => smd!(<span>Something went wrong fetching the data</span>),
+        }
+      }
+    </div>
   );
 
   smithy::mount(Box::new(app_2), root_element);
