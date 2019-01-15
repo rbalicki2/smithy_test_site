@@ -129,45 +129,56 @@ pub fn start(div_id: String) {
   let mut app_state = RouterState::new();
 
   let app_2 = smd!(
-    on_hash_change={|_| {
-      app_state.handle_hash_change();
-    }};
+    // on_hash_change={|_| {
+    //   app_state.handle_hash_change();
+    // }};
+    // {
+    //   // TODO figure out a way to avoid cloning current_page
+    //   let current_page_for_match = app_state.current_page.clone();
+    //   let user_list = &app_state.user_list;
+    //   let current_page = &mut app_state.current_page;
+    //   match current_page_for_match {
+    //     Page::Home => home_page::home_page(
+    //       &user_list,
+    //       move |id| {
+    //         current_page.set(Page::UserDetailView(id));
+    //       },
+    //     ),
+    //     Page::UserDetailView(id) => {
+    //       if let Some(ref user_info) = app_state.user_list.iter().find(
+    //         |item| item.id == id
+    //       ) {
+    //         user_page::user_page(
+    //           user_info,
+    //           move || current_page.set(Page::Home)
+    //         )
+    //       } else {
+    //         user_page::user_not_found_page()
+    //       }
+    //     }
+    //   }
+    // }
+    // <div>
+    //   <h1>Fetching post like:</h1>
     {
-      // TODO figure out a way to avoid cloning current_page
-      let current_page_for_match = app_state.current_page.clone();
-      let user_list = &app_state.user_list;
-      let current_page = &mut app_state.current_page;
-      match current_page_for_match {
-        Page::Home => home_page::home_page(
-          &user_list,
-          move |id| {
-            current_page.set(Page::UserDetailView(id));
-          },
+      match *(*app_state.unwrapped_posts).borrow() {
+        PromiseState::Pending => smd!(
+          <div>
+            more text
+            { "even moarNO" }
+          </div>
         ),
-        Page::UserDetailView(id) => {
-          if let Some(ref user_info) = app_state.user_list.iter().find(
-            |item| item.id == id
-          ) {
-            user_page::user_page(
-              user_info,
-              move || current_page.set(Page::Home)
-            )
-          } else {
-            user_page::user_not_found_page()
-          }
-        }
+        PromiseState::Success(ref post) => {
+          smd!(<div>fetched a post with title <b>{ &post.title }</b></div>)
+        },
+        PromiseState::Error(_) => smd!(<div>
+          more text
+          { "even moar" }
+        </div>),
       }
     }
-    <div>
-      <h1>Fetching post like:</h1>
-      {
-        match *(*app_state.unwrapped_posts).borrow() {
-          PromiseState::Pending => smd!(<span>still loading</span>),
-          PromiseState::Success(ref post) => smd!(<span>fetched a post with title <b>{ &post.title }</b></span>),
-          PromiseState::Error(_) => smd!(<span>Something went wrong fetching the data</span>),
-        }
-      }
-    </div>
+    // </div>
+    <div />
   );
 
   smithy::mount(Box::new(app_2), root_element);
