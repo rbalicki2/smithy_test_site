@@ -181,5 +181,7 @@ pub fn start(div_id: String) {
     <div />
   );
 
+  // let mut app_2 = smd!({ "hi" }{ " world"}<div />);
+
   smithy::mount(Box::new(app_2), root_element);
 }
