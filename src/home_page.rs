@@ -41,6 +41,7 @@ pub fn home_page<'a>(
       smd!(<div>
         <a
           on_click={|e: &MouseEvent| {
+            web_sys::console::log_1(&wasm_bindgen::JsValue::from_str("on click"));
             cb.borrow()(user_info.id);
             e.prevent_default();
           }}
