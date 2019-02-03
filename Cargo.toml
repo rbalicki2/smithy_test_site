@@ -19,6 +19,9 @@ web-sys = { version = "0.3.5", features = [
   "Window",
   "Location",
 
+  # elements
+  "HtmlInputElement",
+
   # For fetching
   "Headers",
   "Request",

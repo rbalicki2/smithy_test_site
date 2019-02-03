@@ -22,7 +22,10 @@ use smithy::{
     UnwrappedPromise,
   },
 };
-use wasm_bindgen::JsValue;
+use wasm_bindgen::{
+  JsCast,
+  JsValue,
+};
 
 mod fetch_posts;
 use self::fetch_posts::{
@@ -31,6 +34,7 @@ use self::fetch_posts::{
 };
 
 mod home_page;
+mod input;
 mod user_page;
 
 pub struct UserInfo {
@@ -132,6 +136,9 @@ pub fn start(div_id: String) {
     on_hash_change={|_| {
       app_state.handle_hash_change();
     }};
+    post_render={|_| {
+      web_sys::console::log_1("post render");
+    }};
     {
       // TODO figure out a way to avoid cloning current_page
       let current_page_for_match = app_state.current_page.clone();
@@ -160,24 +167,36 @@ pub fn start(div_id: String) {
     }
     <div>
       <h1>Fetching post like:</h1>
-    {
-      match *(*app_state.unwrapped_posts).borrow() {
-        PromiseState::Pending => smd!(
-          <div>
-            pending
-          </div>
-        ),
-        PromiseState::Success(ref post) => {
-          smd!(<div>fetched a post with title <b>{ &post.title }</b></div>)
-        },
-        PromiseState::Error(_) => smd!(<div>
-          error
-        </div>),
+      {
+        match *(*app_state.unwrapped_posts).borrow() {
+          PromiseState::Pending => smd!(
+            <div>
+              pending
+            </div>
+          ),
+          PromiseState::Success(ref post) => {
+            smd!(<div>fetched a post with title <b>{ &post.title }</b></div>)
+          },
+          PromiseState::Error(_) => smd!(<div>
+            error
+          </div>),
+        }
       }
-    }
     </div>
-    // { if get_window().get("foo").is_undefined() { "TL1" } else { "TL2" } }
   );
+
+  // let mut app_str = "hello".to_string();
+  // let app_2 = smd!(
+  //   // post_render={|node_list| {}};
+  //   <input
+  //     value={(&app_str).to_string()}
+  //     on_input={|e: &web_sys::InputEvent| {
+  //       let target = e.target().unwrap();
+  //       let target: web_sys::HtmlInputElement = target.unchecked_into();
+  //       app_str = target.value().chars().take(10).collect();
+  //     }}
+  //   />
+  // );
 
   smithy::mount(Box::new(app_2), root_element);
 }
