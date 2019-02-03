@@ -1,9 +1,5 @@
 use futures::Future;
 use js_sys::Promise;
-use serde::{
-  Deserialize,
-  Serialize,
-};
 // TODO figure out why these imports are being marked as unused
 use serde_derive::{
   Deserialize,
