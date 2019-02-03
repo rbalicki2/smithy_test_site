@@ -41,7 +41,6 @@ pub fn home_page<'a>(
       smd!(<div>
         <a
           on_click={|e: &MouseEvent| {
-            web_sys::console::log_1(&wasm_bindgen::JsValue::from_str("on click"));
             cb.borrow()(user_info.id);
             e.prevent_default();
           }}
@@ -57,4 +56,8 @@ pub fn home_page<'a>(
     Welcome to home_page
     { &mut inner }
   )
+  // smd!(
+  //   <div id="home"><span>Welcome home</span></div>
+  //   DELEAT ME<span>I AM COOL YO</span>
+  // )
 }

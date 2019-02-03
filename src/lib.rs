@@ -158,30 +158,26 @@ pub fn start(div_id: String) {
         }
       }
     }
-    // <div>
-    //   <h1>Fetching post like:</h1>
-    // {
-    //   match *(*app_state.unwrapped_posts).borrow() {
-    //     PromiseState::Pending => smd!(
-    //       <div>
-    //         more text
-    //         { "even moarNO" }
-    //       </div>
-    //     ),
-    //     PromiseState::Success(ref post) => {
-    //       smd!(<div>fetched a post with title <b>{ &post.title }</b></div>)
-    //     },
-    //     PromiseState::Error(_) => smd!(<div>
-    //       more text
-    //       { "even moar" }
-    //     </div>),
-    //   }
-    // }
-    // </div>
-    <div />
+    <div>
+      <h1>Fetching post like:</h1>
+    {
+      match *(*app_state.unwrapped_posts).borrow() {
+        PromiseState::Pending => smd!(
+          <div>
+            pending
+          </div>
+        ),
+        PromiseState::Success(ref post) => {
+          smd!(<div>fetched a post with title <b>{ &post.title }</b></div>)
+        },
+        PromiseState::Error(_) => smd!(<div>
+          error
+        </div>),
+      }
+    }
+    </div>
+    // { if get_window().get("foo").is_undefined() { "TL1" } else { "TL2" } }
   );
-
-  // let mut app_2 = smd!({ "hi" }{ " world"}<div />);
 
   smithy::mount(Box::new(app_2), root_element);
 }
