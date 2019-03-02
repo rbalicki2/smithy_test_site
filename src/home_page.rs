@@ -53,6 +53,12 @@ pub fn home_page<'a>(
     .collect::<Vec<SmithyComponent>>();
 
   smd!(
+    post_render={|_| {
+      web_sys::console::log_1(&wasm_bindgen::JsValue::from_str("inner post render"));
+    }};
+    on_hash_change={|_| {
+      web_sys::console::log_1(&wasm_bindgen::JsValue::from_str("inner hash change"));
+    }};
     Welcome to home_page
     { &mut inner }
   )
