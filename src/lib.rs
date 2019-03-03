@@ -126,45 +126,6 @@ impl RouterState {
   }
 }
 
-#[derive(Debug)]
-pub struct Value<T>(T);
-
-pub trait Mutable<T> {
-  fn set(&mut self, t: T);
-  fn get(&self) -> &T;
-}
-
-impl<T> Value<T> {
-  fn new(t: T) -> Self {
-    Value(t)
-  }
-}
-
-impl<T> Mutable<T> for Value<T> {
-  fn set(&mut self, t: T) {
-    *self = Value::new(t);
-  }
-
-  fn get(&self) -> &T {
-    &self.0
-  }
-}
-
-// TODO figure out how to get this to work
-// pub struct GetterSetter<'a, T> {
-//   pub get: Box<Fn() -> &'a T>,
-//   pub set: Box<FnMut(T)>,
-// }
-
-// impl<'a, T> Mutable<T> for GetterSetter<'a, T> {
-//   fn get(&self) -> &T {
-//     self.get()
-//   }
-//   fn set(&mut self, t: T) {
-//     self.set(t)
-//   }
-// }
-
 #[wasm_bindgen]
 pub fn start(div_id: String) {
   let doc: Document = get_document();
@@ -227,19 +188,10 @@ pub fn start(div_id: String) {
 
   let mut outer_input_str = "hello".to_string();
 
-  // let getter_setter: GetterSetter<String> = GetterSetter {
-  //   get: Box::new(|| &"asdf".to_string()),
-  //   set: Box::new(|val| {
-  //     web_sys::console::log_1(&wasm_bindgen::JsValue::from_str("setting {}", val))
-  //   }),
-  // };
-
-  let mut dom_ref: DomRef = DomRef::new("outer 1".to_string());
-  let mut dom_ref_outer_2: DomRef = DomRef::new("outer 2".to_string());
+  let mut dom_ref: DomRef = DomRef::new();
+  let mut dom_ref_outer_2: DomRef = DomRef::new();
 
   let mut inner_input_str = "inner".to_string();
-  // let mut inner_input_str = Value::new(inner_input_str);
-  // let mut inner_input = input::render_3(inner_input_str);
   let inner_input_str = std::rc::Rc::new(std::cell::RefCell::new(inner_input_str));
   let inner_1 = inner_input_str.clone();
   let inner_2 = inner_input_str.clone();
@@ -251,12 +203,9 @@ pub fn start(div_id: String) {
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner input str val {}", inner_1.borrow())));
 
       if let Some(el) = dom_ref.get() {
-        // let el: () = el;
         let el: &web_sys::HtmlInputElement = el.unchecked_ref();
         el.set_value(&outer_input_str);
       }
-      // let el: web_sys::HtmlInputElement = node_list.get(0).unwrap().unchecked_into();
-      // el.set_value(&outer_input_str);
     }};
     <input
       ref={&mut dom_ref}
@@ -267,18 +216,8 @@ pub fn start(div_id: String) {
         outer_input_str = target.value().chars().take(10).collect();
       }}
     />
-    // BYAH!
-    <div ref={&mut dom_ref_outer_2}>
-    //   hi
-    //   // <div ref={&mut dom_ref_2}>inner</div>
-    </div>
-    { &mut inner_input } // some real shit
-    // { &mut input::render_3(&mut inner_input_str)}
-                                              // TODO: inner ref is not picked up with path [3, 1]
-                                              // but the ref in input.rs is
-                                              // <div id="wut" ref={"outer"}>
-                                              //   <div ref={"innerref"} />
-                                              // </div>
+    <div ref={&mut dom_ref_outer_2} />
+    { &mut inner_input }
   );
 
   smithy::mount(Box::new(app_2), root_element);

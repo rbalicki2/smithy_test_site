@@ -1,4 +1,3 @@
-use crate::Mutable;
 use smithy::{
   smd,
   types::{
@@ -74,7 +73,7 @@ use web_sys::InputEvent;
 // }
 
 pub fn render_3<'a>(value: std::rc::Rc<std::cell::RefCell<String>>) -> SmithyComponent<'a> {
-  let mut dom_ref_inner: DomRef = DomRef::new("inner in render 3".to_string());
+  let mut dom_ref_inner: DomRef = DomRef::new();
   smd!(
     post_render={|_| {
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner is some = {}", dom_ref_inner.get().is_some())));
