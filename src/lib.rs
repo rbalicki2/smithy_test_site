@@ -226,8 +226,6 @@ pub fn start(div_id: String) {
   // );
 
   let mut outer_input_str = "hello".to_string();
-  let mut inner_input_str = "inner".to_string();
-  let mut inner_input_str = Value::new(inner_input_str);
 
   // let getter_setter: GetterSetter<String> = GetterSetter {
   //   get: Box::new(|| &"asdf".to_string()),
@@ -239,12 +237,18 @@ pub fn start(div_id: String) {
   let mut dom_ref: DomRef = DomRef::new("outer 1".to_string());
   let mut dom_ref_outer_2: DomRef = DomRef::new("outer 2".to_string());
 
-  // TODO save input::render_2 to a variable, so that the ref's persist
-  // GAH WTF that's so annoying
+  let mut inner_input_str = "inner".to_string();
+  // let mut inner_input_str = Value::new(inner_input_str);
+  // let mut inner_input = input::render_3(inner_input_str);
+  let inner_input_str = std::rc::Rc::new(std::cell::RefCell::new(inner_input_str));
+  let inner_1 = inner_input_str.clone();
+  let inner_2 = inner_input_str.clone();
+  let mut inner_input = input::render_3(inner_2);
 
   let app_2 = smd!(
     post_render={|node_list: &Vec<web_sys::Node>| {
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("outer post render in input {} 2:{}", dom_ref.get().is_some(), dom_ref_outer_2.get().is_some())));
+      web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner input str val {}", inner_1.borrow())));
 
       if let Some(el) = dom_ref.get() {
         // let el: () = el;
@@ -268,7 +272,8 @@ pub fn start(div_id: String) {
     //   hi
     //   // <div ref={&mut dom_ref_2}>inner</div>
     </div>
-    { input::render_2(&mut inner_input_str) } // some real shit
+    { &mut inner_input } // some real shit
+    // { &mut input::render_3(&mut inner_input_str)}
                                               // TODO: inner ref is not picked up with path [3, 1]
                                               // but the ref in input.rs is
                                               // <div id="wut" ref={"outer"}>
