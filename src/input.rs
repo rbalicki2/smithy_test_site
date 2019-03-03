@@ -75,13 +75,13 @@ use web_sys::InputEvent;
 pub fn render_3<'a>(value: std::rc::Rc<std::cell::RefCell<String>>) -> SmithyComponent<'a> {
   let mut dom_ref_inner: Option<web_sys::HtmlElement> = None;
   smd!(
-    post_render={|_| {
+    post_render={|| {
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner is some = {}", dom_ref_inner.is_some())));
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("render 3 value = {}", *value.borrow())));
-      // if let Some(el) = dom_ref_inner {
-      //   let el: &web_sys::HtmlInputElement = el.unchecked_ref();
-      //   el.set_value(&*value.borrow());
-      // }
+      if let Some(el) = &dom_ref_inner {
+        let el: &web_sys::HtmlInputElement = el.unchecked_ref();
+        el.set_value(&*value.borrow());
+      }
     }};
     inner
     <input

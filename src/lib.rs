@@ -198,7 +198,7 @@ pub fn start(div_id: String) {
   // let mut inner_input = input::render_3(inner_2);
 
   let app_2 = smd!(
-    post_render={|node_list: &Vec<web_sys::Node>| {
+    post_render={|| {
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("outer post render in input {} 2:{}", dom_ref.is_some(), dom_ref_outer_2.is_some())));
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner input str val {}", inner_1.borrow())));
 
