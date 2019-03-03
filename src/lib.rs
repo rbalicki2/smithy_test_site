@@ -188,21 +188,21 @@ pub fn start(div_id: String) {
 
   let mut outer_input_str = "hello".to_string();
 
-  let mut dom_ref: DomRef = DomRef::new();
-  let mut dom_ref_outer_2: DomRef = DomRef::new();
+  let mut dom_ref: DomRef = None;
+  let mut dom_ref_outer_2: DomRef = None;
 
   let mut inner_input_str = "inner".to_string();
   let inner_input_str = std::rc::Rc::new(std::cell::RefCell::new(inner_input_str));
   let inner_1 = inner_input_str.clone();
   let inner_2 = inner_input_str.clone();
-  let mut inner_input = input::render_3(inner_2);
+  // let mut inner_input = input::render_3(inner_2);
 
   let app_2 = smd!(
     post_render={|node_list: &Vec<web_sys::Node>| {
-      web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("outer post render in input {} 2:{}", dom_ref.get().is_some(), dom_ref_outer_2.get().is_some())));
+      web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("outer post render in input {} 2:{}", dom_ref.is_some(), dom_ref_outer_2.is_some())));
       web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner input str val {}", inner_1.borrow())));
 
-      if let Some(el) = dom_ref.get() {
+      if let Some(el) = &dom_ref {
         let el: &web_sys::HtmlInputElement = el.unchecked_ref();
         el.set_value(&outer_input_str);
       }
@@ -217,7 +217,7 @@ pub fn start(div_id: String) {
       }}
     />
     <div ref={&mut dom_ref_outer_2} />
-    { &mut inner_input }
+    // { &mut inner_input }
   );
 
   smithy::mount(Box::new(app_2), root_element);
