@@ -195,7 +195,7 @@ pub fn start(div_id: String) {
   let inner_input_str = std::rc::Rc::new(std::cell::RefCell::new(inner_input_str));
   let inner_1 = inner_input_str.clone();
   let inner_2 = inner_input_str.clone();
-  // let mut inner_input = input::render_3(inner_2);
+  let mut inner_input = input::render_3(inner_2);
 
   let app_2 = smd!(
     post_render={|| {
@@ -217,7 +217,7 @@ pub fn start(div_id: String) {
       }}
     />
     <div ref={&mut dom_ref_outer_2} />
-    // { &mut inner_input }
+    { &mut inner_input }
   );
 
   smithy::mount(Box::new(app_2), root_element);

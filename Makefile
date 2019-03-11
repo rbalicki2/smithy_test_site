@@ -6,3 +6,13 @@ build :
 	cp static/* dist/
 	cargo +nightly build --target wasm32-unknown-unknown
 	wasm-bindgen target/wasm32-unknown-unknown/debug/smithy_test_site.wasm --out-dir ./dist
+
+build_prod :
+	mkdir -p dist
+	cp static/* dist/
+	cargo +nightly build --target wasm32-unknown-unknown
+	wasm-bindgen target/wasm32-unknown-unknown/debug/smithy_test_site.wasm --out-dir ./dist
+	../binaryen/bin/wasm-opt -Oz -o dist/smithy_test_site.wasm dist/smithy_test_site_bg.wasm
+	NODE_ENV=production npm run webpack
+	cp static/index.html dist_prod/
+

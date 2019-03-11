@@ -1,9 +1,9 @@
 {
   "scripts": {
-    "serve": "babel-node ./scripts/serve.js",
+    "serve": "nvm use v8.9.0 && babel-node ./scripts/serve.js",
     "build": "make build",
-    "build:prod": "make build:prod",
-    "build:watch": "cargo watch -x 'make build' -w . -w ../smithy/ -w ../jsx_compiler/ -w ./src/"
+    "build:prod": "make build_prod",
+    "webpack": "webpack"
   },
   "devDependencies": {
     "babel-plugin-transform-decorators-legacy": "^1.3.5",
@@ -12,8 +12,15 @@
     "babel-preset-react": "^6.24.1",
     "react": "^16.4.1",
     "react-hot-loader": "^4.3.3",
-    "webpack": "^4.0.1",
+    "webpack": "4.15.1",
     "webpack-cli": "^2.0.10",
     "webpack-dev-server": "^3.1.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0",
+      "flow"
+    ]
   }
 }
