@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "serve": "nvm use v8.9.0 && babel-node ./scripts/serve.js",
+    "serve": "babel-node ./scripts/serve.js",
     "build": "make build",
     "build:prod": "make build_prod",
     "webpack": "webpack"
