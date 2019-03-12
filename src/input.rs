@@ -8,6 +8,7 @@ use smithy::{
 };
 use std::{
   cell::RefCell,
+  ops::Deref,
   rc::Rc,
 };
 use wasm_bindgen::JsCast;
@@ -72,24 +73,29 @@ use web_sys::InputEvent;
 //   )
 // }
 
-pub fn render_3<'a>(value: std::rc::Rc<std::cell::RefCell<String>>) -> SmithyComponent<'a> {
+pub fn render_3<'a>(
+  value: Rc<RefCell<String>>,
+  // should be called... parse? format?
+  transformer: impl Fn(String) -> String + 'a,
+) -> SmithyComponent<'a> {
   let mut dom_ref_inner: Option<web_sys::HtmlElement> = None;
   smd!(
     post_render={|| {
-      web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner is some = {}", dom_ref_inner.is_some())));
-      web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("render 3 value = {}", *value.borrow())));
+      // web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner is some = {}", dom_ref_inner.is_some())));
+      // web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("render 3 value = {}", *value.borrow())));
       if let Some(el) = &dom_ref_inner {
         let el: &web_sys::HtmlInputElement = el.unchecked_ref();
         el.set_value(&*value.borrow());
       }
     }};
-    inner
+    inner {&*value.borrow()}
     <input
+      value={(&*value.borrow()).to_string()}
       ref={&mut dom_ref_inner}
       on_input={|e: &InputEvent| {
         let target = e.target().unwrap();
         let target: web_sys::HtmlInputElement = target.unchecked_into();
-        let new_val = target.value().chars().take(5).collect();
+        let new_val = transformer(target.value());
         let mut value = value.borrow_mut();
         *value = new_val;
       }}

@@ -2,6 +2,7 @@ watch :
 	cargo watch -x fmt -s 'make build' -w src -w ../smithy/ -w ../basic_futures/
 
 build :
+	# rm -rf dist
 	mkdir -p dist
 	cp static/* dist/
 	cargo +nightly build --target wasm32-unknown-unknown
