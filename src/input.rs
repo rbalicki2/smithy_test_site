@@ -88,7 +88,7 @@ pub fn render_3<'a>(
         el.set_value(&*value.borrow());
       }
     }};
-    inner {&*value.borrow()}
+    inner2 {&*value.borrow()}
     <input
       value={(&*value.borrow()).to_string()}
       ref={&mut dom_ref_inner}

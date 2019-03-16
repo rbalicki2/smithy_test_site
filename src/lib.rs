@@ -193,7 +193,7 @@ pub fn start(div_id: String) {
 
   let inner_input_str = "inner".to_string();
   let inner_input_str = std::rc::Rc::new(std::cell::RefCell::new(inner_input_str));
-  let mut inner_input_str_2 = inner_input_str.clone();
+  let inner_input_str_2 = inner_input_str.clone();
   // let mut inner_input_str_3 = inner_input_str.clone();
   // let inner_1 = inner_input_str.clone();
   // let inner_2 = inner_input_str.clone();
@@ -214,10 +214,6 @@ pub fn start(div_id: String) {
 
   let app_2 = smd!(
     post_render={|| {
-      // web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("outer post render in input {} 2:{}", dom_ref.is_some(), dom_ref_outer_2.is_some())));
-      // web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("inner input str val {}", inner_1.borrow())));
-      // web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!("post render val {}", second_input.borrow())));
-
       if let Some(el) = &dom_ref {
         let el: &web_sys::HtmlInputElement = el.unchecked_ref();
         el.set_value(&outer_input_str);
