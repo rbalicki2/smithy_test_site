@@ -2,21 +2,23 @@ watch :
 	cargo watch -x fmt -s 'make build' -w src -w ../smithy/ -w ../basic_futures/
 
 build :
-	# rm -rf dist
+	rm -rf dist
 	mkdir -p dist
 	cp static/* dist/
 	cargo +nightly build --target wasm32-unknown-unknown
 	wasm-bindgen target/wasm32-unknown-unknown/debug/smithy_test_site.wasm --out-dir ./dist
 
 build_prod :
+	make build
 	rm -rf dist_prod
 	mkdir -p dist
 	cp static/* dist/
 	cargo +nightly build --target wasm32-unknown-unknown
 	wasm-bindgen target/wasm32-unknown-unknown/debug/smithy_test_site.wasm --out-dir ./dist
-	../binaryen/bin/wasm-opt -Oz -o dist/smithy_test_site.wasm dist/smithy_test_site_bg.wasm
-	# NODE_ENV=production npm run webpack
-	npm run webpack
+	../binaryen/bin/wasm-opt -Oz -o dist/smithy_test_site_bg.wasm dist/smithy_test_site_bg.wasm
+	# ../binaryen/bin/wasm-opt -O0 -o dist/smithy_test_site_bg.wasm dist/smithy_test_site_bg.wasm
+	NODE_ENV=production npm run webpack
+	# npm run webpack
 	cp static/index.html dist_prod/
 
 deploy :
